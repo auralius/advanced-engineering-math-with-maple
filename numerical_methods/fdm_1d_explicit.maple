@@ -22,11 +22,11 @@ for k from 1 to N__t do     # time-wise
   U[N__x+1,k]:=q((k-1)*Delta__t):
 
   for j from 2 to N__x do   # length-wise
-    U[j,k+1]:=evalf(r*U(j-1,k)+(1-2*r)*U(j,k)+r*U(j+1,k)):
+    U[j,k+1]:=r*U(j-1,k)+(1-2*r)*U(j,k)+r*U(j+1,k):
   end do:
 end do:
 
-return U;
+return evalf(U);
 
 end proc:
 #-------------------------------------------------
