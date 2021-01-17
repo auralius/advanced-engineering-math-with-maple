@@ -1,4 +1,4 @@
-fdm_1d_implicit:=proc(alpha, p, q, f, L, N__x, N__t, t__F)
+fdm_1d_implicit_jacobi:=proc(alpha, p, q, f, L, N__x, N__t, t__F)
 
 local Delta__x, Delta__t, U, r, j, k, dummy;
 local A_prime, c, U_now, U_next;
@@ -15,7 +15,7 @@ A_prime:=Matrix(N__x-1,N__x-1);
 
 for j from 1 to N__x-1 do
   for k from 1 to N__x-1 do
-    if type(j+k, odd)= true then
+    if (abs(j-k)=1) then
       A_prime[j,k] := -r;
     end if
   end do:
