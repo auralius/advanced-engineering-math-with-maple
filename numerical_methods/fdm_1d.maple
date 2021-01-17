@@ -1,0 +1,33 @@
+fdm_1d:=proc(alpha, p, q, f, L, N__x, N__t, t__F)
+
+local Delta__x, Delta__t, U, r, j, k;
+
+Delta__x:=L/N__x;
+Delta__t:=t__F/N__t;
+
+# Prepare the matrix u
+U:=Matrix(N__x+1,N__t+1,0):
+
+# Apply the initial condition U(x,0)=f(x)
+for j from 1 to N__x+1 do 
+  U[j,1]:=f((j-1)*Delta__x);
+end do:
+
+r:=alpha^2*Delta__t/Delta__x^2:
+
+for k from 1 to N__t do     # time-wise
+  
+  # Keep the boundary condition
+  U[1,k]:=p((k-1)*Delta__t):
+  U[N__x+1,k]:=q((k-1)*Delta__t):
+
+  for j from 2 to N__x do   # length-wise
+    U[j,k+1]:=evalf(r*U(j-1,k)+(1-2*r)*U(j,k)+r*U(j+1,k)):
+  end do:
+end do:
+
+return U;
+
+end proc:
+#-------------------------------------------------
+
