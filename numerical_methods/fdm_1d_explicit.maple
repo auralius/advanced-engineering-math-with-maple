@@ -1,4 +1,4 @@
-fdm_1d:=proc(alpha, p, q, f, L, N__x, N__t, t__F)
+fdm_1d_explicit:=proc(alpha, p, q, f, L, N__x, N__t, t__F)
 
 local Delta__x, Delta__t, U, r, j, k;
 
