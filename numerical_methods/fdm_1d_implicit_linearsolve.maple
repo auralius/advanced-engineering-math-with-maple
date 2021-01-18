@@ -11,7 +11,7 @@ Delta__t:=t__F/N__t;
 r:=evalf(alpha^2*Delta__t/Delta__x^2):
 
 #-------------------------------------------------------------------------------
-# Create matrix A
+# Create matrix A and b
 A:=Matrix(N__x-1,N__x-1);
 b:=Matrix(N__x-1,N__x-1);
 
@@ -28,7 +28,7 @@ for j from 1 to N__x-1 do
 end do:
 
 #-------------------------------------------------------------------------------
-# Prepare the matrix u
+# Prepare the matrix U
 U:=Matrix(N__x+1,N__t+1,0):
 
 #-------------------------------------------------------------------------------
@@ -53,10 +53,14 @@ for k from 1 to N__t do     # time-wise
         seq(0*j,j=2..N__x-2),
         r*q(k*Delta__t)+r*q((k-1)*Delta__t)]);
 
+  # Get current U
   U_now:=Matrix(N__x-1,1,U[2..N__x, k]);
 
+  # Caclate next U
   B:=(b.U_now)+c;
   U_next:=LinearSolve(A,B);
+
+  # Update the corresponding matrix U
   U[2..N__x,k+1]:=U_next;
 
 end do: 
