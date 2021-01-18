@@ -1,9 +1,11 @@
-fdm_2d:=proc(p, q, r, s,f, a, b, M, N)
+fdm_2d:=proc(p, q, r, s,f, a, b, N)
 
-local Delta__x, Delta__y, U, j, k, P, eqs, sol, n;
+local Delta__x, Delta__y, U, j, k, P, eqs, sol, n, M;
 
-Delta__x:=a/M;
+# Delta__x = Delta__y
 Delta__y:=a/N;
+Delta__x:=Delta__y;
+M:=b/Delta__x;
 
 #Create matrix U
 U:=Matrix(M+1,N+1);
