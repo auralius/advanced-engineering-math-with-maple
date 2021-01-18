@@ -1,0 +1,64 @@
+fdm_2d:=proc(p, q, r, s,f, a, b, M, N)
+
+local Delta__x, Delta__y, U, j, k, P, eqs, sol, n;
+
+Delta__x:=a/M;
+Delta__y:=a/N;
+
+#Create matrix U
+U:=Matrix(M+1,N+1);
+
+# Apply boundary conditions
+for j from 1 to M+1 do
+  U(j,1):=s(Delta__x*(j-1));
+  U(j,M+1):=q(Delta__x*(j-1));
+end do:
+
+for k from 1 to N+1 do 
+  U(1,k):=p(Delta__y*(k-1));
+  U(N+1,k):=r(Delta__y*(k-1));
+end do:
+
+#print('U'=evalf(U));
+
+# Insert the u_i,j to U
+for j from 2 to M do
+  for k from 2 to N do 
+    U[j,k]:=u[j-1,k-1];
+  end do:
+end do: 
+
+#print('U'=U);
+
+# Generate system equations by using the five point methods
+P:=Matrix(M-1,N-1):
+for j from 2 to M do
+  for k from 2 to N do 
+    P[j-1,k-1]:=U[j-1,k]+U[j,k-1]+U[j+1,k]+U[j,k+1]-4*U(j,k)=
+                                               f((j-1)*Delta__x,(k-1)*Delta__y);
+  end do:
+end do: 
+
+#print('P'=P);
+
+# Put into a list so we can properly solve them
+eqs:=[seq(seq(P[j,k],k=1..N-1),j=1..M-1)];
+
+# Solve them!
+sol:= evalf(solve(eqs));
+
+n:=1;
+for j from 2 to M do
+  for k from 2 to N do 
+    U[j,k]:=rhs(sol[n]);
+    n:=n+1;
+  end do:
+end do:  
+
+#print('U'=U);
+
+return evalf(U);
+
+end proc:
+#-------------------------------------------------
+
