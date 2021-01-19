@@ -12,8 +12,8 @@ U:=Matrix(M+1,N+1);
 
 # Apply boundary conditions
 for j from 1 to M+1 do
-  U(j,1):=s(Delta__x*(j-1));
-  U(j,M+1):=q(Delta__x*(j-1));
+  U(j,1):=q(Delta__x*(j-1));
+  U(j,M+1):=s(Delta__x*(j-1));
 end do:
 
 for k from 1 to N+1 do 
