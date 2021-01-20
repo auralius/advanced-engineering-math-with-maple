@@ -1,0 +1,138 @@
+# p. 95, Chapter 20, Eq. 11, Greenberg's book
+#===============================================================================
+CreateA:=proc(m,n)
+  local A, N, j, k;
+  N:=(m-1)*(n-1);
+  A:=Matrix(N,N);
+
+  for j from 1 to N do
+    for k from 1 to N do
+      if (j=k) then 
+        A[j,k]:=-4;
+      elif abs(j-k)=1 then
+        A[j,k]:=1;
+      elif abs(j-k)=m-1 then 
+        A[j,k]:=1
+      end if;
+    end do:
+  end do:
+
+  for j from 1 to N-1 do
+    for k from 1 to N-1 do
+      if (j=k) and irem(j,m-1)=0 then
+        A[j+1,k]:=0;
+      end if:
+      if (j=k) and irem(k,m-1)=0 then
+        A[j,k+1]:=0;
+      end if:
+    end do:
+  end do:
+return A;
+
+end proc:
+
+#===============================================================================
+
+CreateC:=proc(U, f)
+  local m, n, j, k, c, M, N;
+
+  m,n:=Dimension(U); 
+  M:= m-2; # first row and last row are the boundaries
+  N:= n-2; # first column and the last column are the boundaries
+
+  c:=f;
+  
+  #print('c'=c);
+
+  # Hang on on tight, here we go!
+  for j from 1 to M do
+    for k from 1 to N do
+    
+      if (j=1) then 
+        c[j+(k-1)*M,1]:=c[j+(k-1)*M,1]+U[1,k+1]:
+      end if;
+      if (k=1) then 
+        c[j+(k-1)*M,1]:=c[j+(k-1)*M,1]+U[j+1,1]:
+      end if;
+      if (j=M) then 
+        c[j+(k-1)*M,1]:=c[j+(k-1)*M,1]+U[M+2,k+1]:
+      end if:
+      if (k=N) then 
+        c[j+(k-1)*M,1]:=c[j+(k-1)*M,1]+U[k+1,N+2]:
+      end if:
+   
+    end do:
+  end do:
+
+  return c;
+end proc:
+
+#===============================================================================
+
+fdm_2d_linearsolve:=proc(p, q, r, s,f, a, b, n_segs)
+
+local Delta__x, Delta__y, U, j, k, sol, n, N, M, F;
+local A, c;
+
+# Delta__x = Delta__y
+N:=n_segs;
+Delta__y:=a/N;
+Delta__x:=Delta__y;
+M:=b/Delta__x;
+
+#Create matrix U
+U:=Matrix(M+1,N+1);
+
+# Apply boundary conditions
+for j from 1 to M+1 do
+  U(j,1):=q(Delta__x*(j-1));
+  U(j,N+1):=s(Delta__x*(j-1));
+end do:
+
+for k from 1 to N+1 do 
+  U(1,k):=p(Delta__y*(k-1));
+  U(M+1,k):=r(Delta__y*(k-1));
+end do:
+
+print("Matrix U with the boundary applied");
+print('U'=U);
+
+# For Poisson system, prepare matrix F
+F:=Matrix((M-1)*(N-1),1);
+
+n:=1;
+for j from 1 to M-1 do
+  for k from 1 to N-1 do
+  F[n,1]:= f((j)*Delta__x,(k)*Delta__y);
+  n:=n+1;
+  end do:
+end do:
+#print('F'=F);
+
+# AU=c, solve for U
+A:=CreateA(M,N);
+c:=CreateC(U,F);
+print("AU=c, where:");
+print('A'=A);
+print('c'=c);
+
+# Find solutions
+print("Solve for U=LinearSolve(A,-c)");
+sol:=LinearSolve(A,-c);
+
+# Put the solutions back to matrix U, pay atention that the row goes first 
+# followed by the column
+n:=1;
+for k from 2 to N do
+  for j from 2 to M do 
+    U[j,k]:=sol(n);
+    n:=n+1;
+  end do:
+end do:  
+
+
+return evalf(U);
+
+end proc:
+#-------------------------------------------------
+

@@ -1,8 +1,9 @@
-fdm_2d:=proc(p, q, r, s,f, a, b, N)
+fdm_2d_symbolic:=proc(p, q, r, s,f, a, b, n_segs)
 
-local Delta__x, Delta__y, U, j, k, P, eqs, sol, n, M;
+local Delta__x, Delta__y, U, j, k, P, eqs, sol, n, N, M;
 
 # Delta__x = Delta__y
+N:=n_segs;
 Delta__y:=a/N;
 Delta__x:=Delta__y;
 M:=b/Delta__x;
@@ -13,12 +14,12 @@ U:=Matrix(M+1,N+1);
 # Apply boundary conditions
 for j from 1 to M+1 do
   U(j,1):=q(Delta__x*(j-1));
-  U(j,M+1):=s(Delta__x*(j-1));
+  U(j,N+1):=s(Delta__x*(j-1));
 end do:
 
 for k from 1 to N+1 do 
   U(1,k):=p(Delta__y*(k-1));
-  U(N+1,k):=r(Delta__y*(k-1));
+  U(M+1,k):=r(Delta__y*(k-1));
 end do:
 
 #print('U'=evalf(U));
@@ -30,7 +31,8 @@ for j from 2 to M do
   end do:
 end do: 
 
-#print('U'=U);
+print("Matrix U with the boundary applied");
+print('U'=U);
 
 # Generate system equations by using the five point methods
 P:=Matrix(M-1,N-1):
@@ -41,7 +43,8 @@ for j from 2 to M do
   end do:
 end do: 
 
-#print('P'=P);
+print("Applying the five-points algorithm results in the following linear equations that can be solved:");
+print('P'=P);
 
 # Put into a list so we can properly solve them
 eqs:=[seq(seq(P[j,k],k=1..N-1),j=1..M-1)];
