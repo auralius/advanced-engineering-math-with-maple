@@ -1,3 +1,7 @@
+# Auralius Manurung, 2021
+# Universitas Pertamina
+#===============================================================================
+
 fdm_1d_implicit_linearsolve:=proc(alpha, p, q, f, L, N__x, N__t, t__F)
 
 local Delta__x, Delta__t, U, U_now, U_next, r, j, k, c;

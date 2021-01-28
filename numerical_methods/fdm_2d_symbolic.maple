@@ -1,3 +1,7 @@
+# Auralius Manurung, 2021
+# Universitas Pertamina
+#===============================================================================
+
 fdm_2d_symbolic:=proc(p, q, r, s,f, a, b, n_segs)
 
 local Delta__x, Delta__y, U, j, k, P, eqs, sol, n, N, M;

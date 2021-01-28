@@ -1,0 +1,41 @@
+#===============================================================================
+# Equation 20 p.098 Greenberg's book
+# Figure 8, p.097
+#              N
+#              |
+#            bet*h
+#              |
+#    W--gam*h--P--alph*h--E
+#              |
+#            delt*h
+#              |
+#              S
+#
+generate_equation:=proc(P,
+                        W,
+                        S,
+                        E,
+                        N,
+                        alph,
+                        bet,
+                        gam,
+                        del, 
+                        h, 
+                        Fp)
+  local eq;
+  eq:=2/(gam*(gam+alph))*W+
+      2/(del*(del+bet))*S+
+      2/(alph*(alph+gam))*E+
+      2/(bet*(bet+del))*N-
+      2(alph*bet+bet*del)/(alph*bet*del*gam)*P
+      =h^2*Fp;
+  return eq;
+end proc:
+
+#===============================================================================
+                                                                                            
+test01:=proc()
+  generate_equation(U[P], U[W], U[S], U[E], U[N], alpha, beta, gamma, delta, h, f__p);
+end proc: 
+
+#===============================================================================
