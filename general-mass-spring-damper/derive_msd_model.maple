@@ -1,0 +1,99 @@
+# ===================================================================================================
+
+mass_spring_damper:=proc(n, M, K, B, F)
+local i, j, U, T, R, L, eq1, eq2, eq3, eq4, sol, x_array;
+local u, r;
+
+# find the kinetic energy 
+for i from 1 to n do
+  T[i]:=1/2*M[i]*diff(x[i](t),t)^2:  
+end do;
+
+# find the potential energy 
+for i from 1 to n do
+  u:=0;
+  r:=0;
+  for j from 1 to n do 
+    if i=j then 
+      u:=u+1/2*K[i,j]*(x[i](t))^2; 
+      r:=r+1/2*B[i,j]*(diff(x[i](t),t))^2; 
+    else
+      u:=u+1/2*K[i,j]*(x[i](t)-x[j](t))^2; 
+      r:=r+1/2*B[i,j]*(diff(x[i](t),t)-diff(x[j](t),t))^2; 
+    end if;
+  end do;  
+  U[i]:=u;
+  R[i]:=r
+end do;
+
+U:=add(U[i],i=1..n); # potential energy
+T:=add(T[i],i=1..n); # kinetic energy
+R:=add(R[i],i=1..n); # dissipation energy
+
+# the lagrange method
+for i from 1 to n do
+  eq1[i]:=diff(T,diff(x[i](t),t),t)-diff(T,x[i](t))+diff(R,diff(x[i](t),t))+diff(U,x[i](t))=F[i];
+end do; 
+
+print(`The equations of motion:`);
+seq(print(eq1[i]),i=1..n);
+
+# simplificatoins
+
+eq2:=solve({seq(eq1[i],i=1..n)},{seq(diff(x[i](t),t,t),i=1..n)});
+eq3:=collect(eq2,{seq(x[i](t),i=1..n), seq(diff(x[i](t),t),i=1..n)});
+
+print(`when simplified:`);
+seq(print(eq3[i]),i=1..n);
+  
+return {seq(eq3[i],i=1..n)};
+
+end proc:
+
+# ===================================================================================================
+
+in_matrix:=proc(n,eq)
+
+# x_ddot = 1/M(Kx+Bx_dot+f_ext)
+	
+local i,j,K,B,f_ext,eq1,A,x_dot_vect,x_vect,u_vect;
+
+K:=Matrix(n,n,0);
+B:=Matrix(n,n,0);
+f_ext:=Matrix(n,1,0);
+
+for i from 1 to n do
+  for j from 1 to n do
+    K[i,j]:=coeff(eval(rhs(eq[i]),x[j](t)=v),v);
+    B[i,j]:=coeff(eval(rhs(eq[i]),diff(x[j](t),t)=v),v);
+  end do;
+end do;
+
+# search for f_ext vector
+for i from 1 to n do
+  eq1:=eval(rhs(eq[i]),{seq(x[j](t)=0,j=1..n),seq(diff(x[j](t),t)=0,j=1..n)});
+  f_ext(i,1):=eq1;	
+end do;
+
+# combine into xdot = Ax+f
+A:=Matrix(2*n,2*n,0);
+A[1..n,n+1..2*n]:=IdentityMatrix(n);
+A[n+1..2*n,1..2*n]:=Matrix(n,2*n,[K,B]);
+
+x_dot_vect:=Matrix(2*n,1,0);
+x_vect:=Matrix(2*n,1,0);
+u_vect:=Matrix(2*n,1,0);
+
+x_dot_vect:=Matrix(2*n, 1,[seq(diff(x[i](t),t),i=1..n),seq(diff(x[i](t),t,t),i=1..n)]);
+x_vect:=Matrix(2*n, 1,[seq(x[i](t),i=1..n),seq(diff(x[i](t),t),i=1..n)]);
+u_vect[n+1..2*n,1]:=Matrix(n,1,f_ext);
+
+print(`in matrix form:`);
+print('diff(x(t),t)=A*x(t)+f(t)');
+print(`where:`);
+print('diff(x(t),t)'=x_dot_vect,'A'=A);
+print('x(t)'=x_vect,'f(t)'=u_vect);
+
+end proc:
+
+# ===================================================================================================
